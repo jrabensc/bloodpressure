@@ -2,15 +2,18 @@
 
 # settings
 
-options(tidyverse.quiet = TRUE)
+
 options(readr.num_columns = 0)
 invisible(Sys.setlocale('LC_TIME', 'de_DE.UTF-8'))
 
 # load libraries ----------------------------------------------------------
 
-library(tidyverse)
+library(dplyr, warn.conflicts = FALSE)
 library(lubridate, warn.conflicts = FALSE)
-library(cli)
+library(cli, warn.conflicts = FALSE)
+library(ggplot2, warn.conflicts = FALSE)
+library(tidyr, warn.conflicts = FALSE)
+library(readr, warn.conflicts = FALSE)
 
 # define functions --------------------------------------------------------
 

@@ -2,5 +2,10 @@ FROM rocker/tidyverse:4.0.3
 RUN apt-get update
 RUN apt-get install -y locales locales-all
 WORKDIR /main/02-src
+ENV RENV_VERSION 0.12.5
+RUN echo "options(renv.consent = TRUE)" >> .Rprofile
+COPY renv.lock .
+RUN R -e "install.packages('renv', repos = c(CRAN = 'https://cloud.r-project.org'))"
+RUN R -e "renv::restore(confirm = FALSE)"
+#RUN R -e "renv::snapshot(confirm = FALSE)"
 CMD ["Rscript", "create_plots.R"]
-
