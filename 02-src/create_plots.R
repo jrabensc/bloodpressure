@@ -2,7 +2,6 @@
 
 # settings
 
-
 options(readr.num_columns = 0)
 invisible(Sys.setlocale('LC_TIME', 'de_DE.UTF-8'))
 
@@ -34,9 +33,9 @@ filter_data <- function(.data, year, ...) {
     filter(year(timestamp) == year)
 }
 
-calc_mean_Werte <- function(.data, Messung) {
+calc_mean_Werte <- function(.data, measurement) {
   .data %>% 
-    filter(Messung == !!Messung) %>% 
+    filter(Messung == !!measurement) %>% 
     summarise(mean = round(mean(Werte), digits = 0))
 }
    
@@ -49,8 +48,8 @@ draw_plot <- function(.data, year) {
     ggtitle(paste0("Blutdruck für das Jahr ", year, ", Johannes Rabenschlag, geb. 07.01.1991")) +
     scale_x_datetime(name = "Zeit", date_breaks = "1 month", date_labels = "%B" ) +
     scale_y_continuous(name = "Wert") +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø diastolisch = ", .data %>% calc_mean_Werte(Messung = "diastolisch"))) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø systolisch = ", .data %>% calc_mean_Werte(Messung = "systolisch"))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø diastolisch = ", .data %>% calc_mean_Werte(measurement = "diastolisch"))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø systolisch = ", .data %>% calc_mean_Werte(measurement = "systolisch"))) +
     guides(colour = guide_legend(reverse = TRUE)) +
     theme_minimal()
 }
