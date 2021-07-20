@@ -14,6 +14,25 @@ library(ggplot2, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 library(readr, warn.conflicts = FALSE)
 
+
+# read environment variables ----------------------------------------------
+
+firstname <- base::Sys.getenv("firstname")
+surname <- base::Sys.getenv("surname")
+birthday <- base::Sys.getenv("birthday")
+
+title <- base::paste0(", ", firstname, " ", surname, ", geb. ", birthday)
+
+file_name <- base::paste0(base::tolower(surname),
+                          "_",
+                          base::tolower(firstname),
+                          "_",
+                          birthday,
+                          "_blutdruck_")
+
+cli::cli_alert_info("Starting plotting process.")
+
+
 # define functions --------------------------------------------------------
 
 prepare_data <- function(.data, ...) {
@@ -45,7 +64,7 @@ draw_plot <- function(.data, year) {
     geom_line(aes(color = Messung), size = 1) +
     scale_color_manual(values = c("#00AFBB", "#E7B800")) +
     geom_text(aes(label = Werte), vjust = -.5) +
-    ggtitle(paste0("Blutdruck für das Jahr ", year, ", Johannes Rabenschlag, geb. 07.01.1991")) +
+    ggtitle(paste0("Blutdruck für das Jahr ", year, title)) +
     scale_x_datetime(name = "Zeit", date_breaks = "1 month", date_labels = "%B" ) +
     scale_y_continuous(name = "Wert") +
     annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø diastolisch = ", .data %>% calc_mean_Werte(measurement = "diastolisch"))) +
@@ -66,7 +85,10 @@ create_blodpressure_plot <- function(.data, year = NULL) {
 for (i in 2018:year(today())) {
   read_csv("/main/01-data/data.csv") %>% 
   create_blodpressure_plot(year = i) %>% 
-  ggsave(filename = paste0("/main/03-output/rabenschlag_johannes_19910107_blutdruck_", i, ".pdf"), device = "pdf", width = 297, height = 210, units = "mm")
+  ggsave(filename = paste0("/main/03-output/", file_name, i, ".pdf"), device = "pdf", width = 297, height = 210, units = "mm")
+  cli::cli_alert_info("Created plot for {i}")
 }
 
-cli_alert_success("Plots created!")
+
+
+cli::cli_alert_success("All plots created!")

@@ -1,6 +1,10 @@
 version: "3.5"
 services:
   create_plots:
+    environment:
+        - firstname=Johannes
+        - surname=Rabenschlag
+        - birthday=07.01.1991
     build:
       context: .
     volumes:

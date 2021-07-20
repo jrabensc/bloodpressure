@@ -7,5 +7,4 @@ RUN echo "options(renv.consent = TRUE)" >> .Rprofile
 COPY renv.lock .
 RUN R -e "install.packages('renv', repos = c(CRAN = 'https://cloud.r-project.org'))"
 RUN R -e "renv::restore(confirm = FALSE)"
-#RUN R -e "renv::snapshot(confirm = FALSE)"
 CMD ["Rscript", "create_plots.R"]
