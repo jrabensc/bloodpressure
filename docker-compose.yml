@@ -2,9 +2,17 @@ version: "3.5"
 services:
   create_plots:
     environment:
-        - firstname=Johannes
-        - surname=Rabenschlag
-        - birthday=07.01.1991
+        - firstname=
+        - surname=
+        - birthday=
+        - systolic_label=
+        - diastolic_label=
+        - measurement_label=
+        - values_label=
+        - plot_title_label=
+        - time_axis_label=
+        - values_axis_label=
+        - time_locale=
     build:
       context: .
     volumes:
