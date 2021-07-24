@@ -1,9 +1,9 @@
-# Docker Image to create plots from Apple Health Bloodpressure data
+# Create plots from Apple Health bloodpressure data
 
 ## Usage
 
-1. clone git
-2. Put source data in `01-data`
-3. run `docker-compose build`
-4. run `docker-compose up --rm`
+1. clone 
+2. Move source data to `01-data`
+3. Adjust environment variables in docker-compose.yml
+4. run `docker-compose up`
 5. Output will be located in `03-output`
