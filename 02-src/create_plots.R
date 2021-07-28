@@ -56,7 +56,7 @@ filter_data <- function(.data, year, ...) {
     dplyr::filter(year(timestamp) == year)
 }
 
-calc_mean_Werte <- function(.data, measurement, measurement_label, values_label, ...) {
+calc_mean_values <- function(.data, measurement, measurement_label, values_label, ...) {
   .data %>% 
     dplyr::filter(measurement_label == !!measurement) %>% 
     dplyr::summarise(mean = round(mean(values_label), digits = 0))
@@ -71,8 +71,8 @@ draw_plot <- function(.data, year, measurement_label, values_label, value_axis_l
     ggtitle(paste0(plot_title_label, ", ", year, ", ", firstname, " ", surname, ", ", birthday)) +
     scale_x_datetime(name = time_axis_label, date_breaks = "1 month", date_labels = "%B" ) +
     scale_y_continuous(name = value_axis_label) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", .data %>% calc_mean_Werte(measurement = diastolic_label))) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", .data %>% calc_mean_Werte(measurement = systolic_label))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", .data %>% calc_mean_values(measurement = diastolic_label))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", .data %>% calc_mean_values(measurement = systolic_label))) +
     guides(colour = guide_legend(reverse = TRUE)) +
     theme_minimal()
 }
