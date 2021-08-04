@@ -1,5 +1,7 @@
 # Create plots from Apple Health bloodpressure data
 
+Code for a [blogpost](https://rabenschlag.eu/posts/2021-07-28-containerize-r-code-using-docker-compose/) I wrote.
+
 ## Usage
 
 1. clone 
