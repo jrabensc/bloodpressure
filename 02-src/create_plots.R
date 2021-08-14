@@ -12,7 +12,7 @@ library(cli, warn.conflicts = FALSE)
 library(ggplot2, warn.conflicts = FALSE)
 library(tidyr, warn.conflicts = FALSE)
 library(readr, warn.conflicts = FALSE)
-devtools::install_github(repo = "https://github.com/jrabensc/rabtools")
+devtools::install_github(repo = "https://github.com/jrabensc/rabtools", quiet = TRUE)
 
 # read environment variables ----------------------------------------------
 
@@ -34,6 +34,8 @@ file_name <- base::paste0(base::tolower(surname),
                           "_",
                           birthday,
                           "_bloodpressure_")
+
+invisible(Sys.setlocale('LC_TIME', time_locale))
 
 cli::cli_alert_info("Starting plotting process.")
 
@@ -71,8 +73,8 @@ draw_plot <- function(.data, year, measurement_label, values_label, value_axis_l
     ggtitle(paste0(plot_title_label, ", ", year, ", ", firstname, " ", surname, ", ", birthday)) +
     scale_x_datetime(name = time_axis_label, date_breaks = "1 month", date_labels = "%B" ) +
     scale_y_continuous(name = value_axis_label) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", .data %>% calc_mean_values(measurement = diastolic_label))) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", .data %>% calc_mean_values(measurement = systolic_label))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", .data %>% calc_mean_values(measurement = diastolic_label, measurement_label = measurement_label, values_label = values_label))) +
+    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", .data %>% calc_mean_values(measurement = systolic_label, measurement_label = measurement_label, values_label = values_label))) +
     guides(colour = guide_legend(reverse = TRUE)) +
     theme_minimal()
 }

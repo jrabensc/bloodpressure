@@ -12,7 +12,7 @@ services:
         - values_label=
         - plot_title_label=
         - time_axis_label=
-        - values_axis_label=
+        - value_axis_label=
         - time_locale=
     volumes:
       - .:/main
