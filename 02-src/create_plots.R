@@ -44,8 +44,8 @@ cli::cli_alert_info("Starting plotting process.")
 prepare_data <- function(.data, systolic_label, diastolic_label, measurement_label, values_label,...) {
   .data %>%
     dplyr::rename(
-      systolic_label = 2,
-      diastolic_label = 3,
+      !!systolic_label := 2,
+      !!diastolic_label := 3,
       "timestamp" = 1
     ) %>%
     tidyr::drop_na() %>%
@@ -60,23 +60,30 @@ filter_data <- function(.data, year, ...) {
 
 calc_mean_values <- function(.data, measurement, measurement_label, values_label, ...) {
   .data %>% 
-    dplyr::filter(measurement_label == !!measurement) %>% 
-    dplyr::summarise(mean = round(mean(values_label), digits = 0))
+    dplyr::filter({{ measurement_label }} == {{ measurement }}) %>% 
+    dplyr::summarise(mean = base::round(base::mean({{ values_label }}), digits = 0))
 }
    
 draw_plot <- function(.data, year, measurement_label, values_label, value_axis_label, plot_title_label) {
+  a <- .data %>% 
+    calc_mean_values(measurement = diastolic_label, measurement_label = !!sym(measurement_label), values_label = !!sym(values_label)) %>% dplyr::pull()
+  
+  b<- .data %>% 
+    calc_mean_values(measurement = systolic_label, measurement_label = !!sym(measurement_label), values_label = !!sym(values_label)) %>% dplyr::pull()
+  
+  
   .data %>% 
-  ggplot(aes(x = timestamp, y = values_label)) +
-    geom_line(aes(color = measurement_label), size = 1) +
-    scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-    geom_text(aes(label = values_label), vjust = -.5) +
-    ggtitle(paste0(plot_title_label, ", ", year, ", ", firstname, " ", surname, ", ", birthday)) +
-    scale_x_datetime(name = time_axis_label, date_breaks = "1 month", date_labels = "%B" ) +
-    scale_y_continuous(name = value_axis_label) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", .data %>% calc_mean_values(measurement = diastolic_label, measurement_label = measurement_label, values_label = values_label))) +
-    annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", .data %>% calc_mean_values(measurement = systolic_label, measurement_label = measurement_label, values_label = values_label))) +
-    guides(colour = guide_legend(reverse = TRUE)) +
-    theme_minimal()
+    ggplot2::ggplot(aes(x = timestamp, y = !!sym(values_label))) +
+      ggplot2::geom_line(aes(color = !!sym(measurement_label)), size = 1) +
+      ggplot2::scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+      ggplot2::geom_text(aes(label = !!sym(values_label)), vjust = -.5) +
+      ggplot2::ggtitle(paste0(plot_title_label, ", ", year, ", ", firstname, " ", surname, ", ", birthday)) +
+      ggplot2::scale_x_datetime(name = time_axis_label, date_breaks = "1 month", date_labels = "%B" ) +
+      ggplot2::scale_y_continuous(name = value_axis_label) +
+      ggplot2::annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 55, hjust = .1, label = paste0("Ø ", diastolic_label, " = ", a)) +
+      ggplot2::annotate("text", x = as.POSIXct(paste0(year, "-01-01")), y = 60, hjust = .1, label = paste0("Ø ", systolic_label, " = ", b)) +
+      ggplot2::guides(colour = ggplot2::guide_legend(reverse = TRUE)) +
+      ggplot2::theme_minimal()
 }
 
 create_blodpressure_plot <- function(.data, year = NULL) {
@@ -95,10 +102,19 @@ create_blodpressure_plot <- function(.data, year = NULL) {
 
 # create the plots --------------------------------------------------------
 
-for (i in 2018:year(today())) {
-  read_csv("/main/01-data/data.csv") %>% 
+starting_year <- readr::read_csv("/main/01-data/data.csv") %>% 
+  dplyr::rename("timestamp" = 1) %>% 
+  dplyr::mutate(timestamp = lubridate::ymd_hms(timestamp)) %>% 
+  dplyr::mutate(timestamp = lubridate::year(timestamp)) %>% 
+  dplyr::summarise(min = base::min(timestamp)) %>% 
+  dplyr::pull()
+
+cli::cli_alert_info("Starting at year {starting_year}.")
+
+for (i in starting_year:lubridate::year(lubridate::today())) {
+  readr::read_csv("/main/01-data/data.csv") %>% 
   create_blodpressure_plot(year = i) %>% 
-  ggsave(filename = paste0("/main/03-output/", file_name, i, ".pdf"), device = "pdf", width = 297, height = 210, units = "mm")
+  ggplot2::ggsave(filename = base::paste0("/main/03-output/", file_name, i, ".pdf"), device = "pdf", width = 297, height = 210, units = "mm")
   cli::cli_alert_info("Created plot for year {i} as {file_name}{i}.pdf")
 }
 
